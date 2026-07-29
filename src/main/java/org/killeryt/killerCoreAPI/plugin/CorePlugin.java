@@ -1,15 +1,11 @@
 package org.killeryt.killerCoreAPI.plugin;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import org.killeryt.killerCoreAPI.gui.GuiListener;
+import org.killeryt.killerCoreAPI.KillerCoreAPI;
 import org.killeryt.killerCoreAPI.utils.ConfigGenerator;
 import org.killeryt.killerCoreAPI.utils.DebugUtils;
 import org.killeryt.killerCoreAPI.utils.LanguageManager;
 
-/**
- * Абстрактный класс для всех плагинов, использующих KillerCoreAPI.
- * Предоставляет готовые утилиты и автоматическую генерацию конфигов.
- */
 public abstract class CorePlugin extends JavaPlugin {
 
     protected DebugUtils debug;
@@ -29,8 +25,10 @@ public abstract class CorePlugin extends JavaPlugin {
         // Языковой менеджер
         languageManager = new LanguageManager(this, "ru");
 
-        // Регистрируем общий GuiListener
-        getServer().getPluginManager().registerEvents(new GuiListener(), this);
+        // Инициализация GUI через CoreAPI
+        KillerCoreAPI.initGui(this);
+
+        // Регистрация слушателя GUI уже выполнена в initGui, но если плагину нужно добавить свои слушатели, он может сделать это позже
     }
 
     @Override
