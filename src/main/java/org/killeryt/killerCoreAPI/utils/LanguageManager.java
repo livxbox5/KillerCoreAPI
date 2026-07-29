@@ -491,6 +491,90 @@ public class LanguageManager {
     }
 
     /**
+     * Отправляет Component с префиксом.
+     * @param player игрок
+     * @param key    ключ сообщения
+     * @param args   аргументы для форматирования
+     */
+    public void sendPrefixedComponent(Player player, String key, Object... args) {
+        Component prefix = toComponent("prefix");
+        Component message = toComponent(key, args);
+        player.sendMessage(prefix.append(message));
+    }
+
+    /**
+     * Отправляет ActionBar и очищает его через указанное количество тиков.
+     * @param player игрок
+     * @param key    ключ сообщения
+     * @param delay  задержка в тиках перед очисткой
+     * @param args   аргументы
+     */
+    public void sendActionBarLater(Player player, String key, long delay, Object... args) {
+        sendActionBar(player, key, args);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                player.sendActionBar(Component.empty());
+            }
+        }.runTaskLater(plugin, delay);
+    }
+
+    /**
+     * Отправляет Title и Subtitle с обработкой PlaceholderAPI.
+     * @param player   игрок
+     * @param titleKey ключ Title
+     * @param subKey   ключ Subtitle
+     * @param args     аргументы
+     */
+    public void sendTitleWithPAPI(Player player, String titleKey, String subKey, Object... args) {
+        String title = get(titleKey, args);
+        String subtitle = subKey != null ? get(subKey, args) : "";
+        title = parsePlaceholders(player, title);
+        subtitle = parsePlaceholders(player, subtitle);
+        sendTitle(player, title, subtitle); // предполагая, что есть перегрузка с прямым текстом
+    }
+
+    /**
+     * Возвращает сообщение с префиксом в виде строки.
+     * @param key  ключ
+     * @param args аргументы
+     * @return строка с префиксом
+     */
+    public String getPrefixed(String key, Object... args) {
+        return getPrefix() + get(key, args);
+    }
+
+    /**
+     * Отправляет компонентное сообщение CommandSender (консоль или игрок).
+     * @param sender    получатель
+     * @param component компонент
+     */
+    public void sendComponent(CommandSender sender, Component component) {
+        sender.sendMessage(component);
+    }
+
+    /**
+     * Отправляет компонентное сообщение CommandSender (консоль или игрок).
+     * @param sender    получатель
+     * @param component компонент
+     */
+    public void sendComponent(CommandSender sender, Component component) {
+        sender.sendMessage(component);
+    }
+
+    /**
+     * Отправляет ActionBar с обработкой PlaceholderAPI.
+     * @param player игрок
+     * @param key    ключ
+     * @param args   аргументы
+     */
+    public void sendActionBarWithPAPI(Player player, String key, Object... args) {
+        String message = parsePlaceholders(player, get(key, args));
+        Component component = MiniMessage.miniMessage().deserialize(message);
+        player.sendActionBar(component);
+    }
+
+    /**
      * Возвращает глобальный экземпляр (если он был инициализирован).
      * @return LanguageManager
      */
