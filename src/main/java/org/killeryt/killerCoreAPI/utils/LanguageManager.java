@@ -242,8 +242,7 @@ public class LanguageManager {
      */
     public void sendSubtitle(Player player, String subKey, Object... args) {
         Component subtitle = parseComponent(subKey, args);
-        player.sendMessage(subtitle); // Неправильно для Subtitle? Лучше использовать showTitle с null Title.
-        // Корректный способ:
+        // Корректный способ: отправляем Title с пустым Title и Subtitle
         player.showTitle(Title.title(Component.empty(), subtitle));
     }
 
