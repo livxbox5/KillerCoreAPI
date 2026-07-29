@@ -1,0 +1,60 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.killeryt",
+    "module": "KillerCoreAPI",
+    "version": "1.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 21,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "KillerCoreAPI-1.0.0.jar",
+          "url": "KillerCoreAPI-1.0.0.jar",
+          "size": 48469,
+          "sha512": "03af9411fbb7a18a73d6611ef487ead3aeb31d8bd5968129dbf414da87a3c1a383d1932924bd10d55cd889d57b85e13d739f5e442be0bc1c2e3dc77f540977b1",
+          "sha256": "8342317279e4c62d9c8f1ccfa746192dcba4e80928e8720e38f1daa9399ba3fb",
+          "sha1": "9bb9db133fe7740e3bb302f78e1527133dc99523",
+          "md5": "2110b2fdc12e160d813c4002afc8d16d"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 21,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "KillerCoreAPI-1.0.0.jar",
+          "url": "KillerCoreAPI-1.0.0.jar",
+          "size": 48469,
+          "sha512": "03af9411fbb7a18a73d6611ef487ead3aeb31d8bd5968129dbf414da87a3c1a383d1932924bd10d55cd889d57b85e13d739f5e442be0bc1c2e3dc77f540977b1",
+          "sha256": "8342317279e4c62d9c8f1ccfa746192dcba4e80928e8720e38f1daa9399ba3fb",
+          "sha1": "9bb9db133fe7740e3bb302f78e1527133dc99523",
+          "md5": "2110b2fdc12e160d813c4002afc8d16d"
+        }
+      ]
+    }
+  ]
+}

@@ -339,6 +339,15 @@ public class LanguageManager {
         player.sendMessage(component);
     }
 
+    /**
+     * Отправляет компонентное сообщение любому CommandSender.
+     * @param sender    получатель
+     * @param component компонент
+     */
+    public void sendComponent(CommandSender sender, Component component) {
+        sender.sendMessage(component);
+    }
+
     // ========== BROADCAST (РАССЫЛКА) ==========
 
     /**
@@ -468,28 +477,6 @@ public class LanguageManager {
         player.sendActionBar(component);
     }
 
-    // ========== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ==========
-
-    private Component parseComponent(String key, Object... args) {
-        String message = get(key, args);
-        return MiniMessage.miniMessage().deserialize(message);
-    }
-
-    // ========== СТАТИЧЕСКИЙ ДОСТУП (для удобства в других плагинах) ==========
-
-    private static LanguageManager instance;
-
-    /**
-     * Инициализирует глобальный экземпляр (если требуется синглтон).
-     * @param plugin   плагин
-     * @param language язык
-     */
-    public static void init(JavaPlugin plugin, String language) {
-        if (instance == null) {
-            instance = new LanguageManager(plugin, language);
-        }
-    }
-
     /**
      * Отправляет Component с префиксом.
      * @param player игрок
@@ -527,11 +514,13 @@ public class LanguageManager {
      * @param args     аргументы
      */
     public void sendTitleWithPAPI(Player player, String titleKey, String subKey, Object... args) {
-        String title = get(titleKey, args);
-        String subtitle = subKey != null ? get(subKey, args) : "";
-        title = parsePlaceholders(player, title);
-        subtitle = parsePlaceholders(player, subtitle);
-        sendTitle(player, title, subtitle); // предполагая, что есть перегрузка с прямым текстом
+        String title = parsePlaceholders(player, get(titleKey, args));
+        String subtitle = subKey != null ? parsePlaceholders(player, get(subKey, args)) : "";
+        // Если хотите отправить уже готовые строки, используйте:
+        player.showTitle(Title.title(
+                MiniMessage.miniMessage().deserialize(title),
+                subtitle.isEmpty() ? null : MiniMessage.miniMessage().deserialize(subtitle)
+        ));
     }
 
     /**
@@ -544,34 +533,26 @@ public class LanguageManager {
         return getPrefix() + get(key, args);
     }
 
-    /**
-     * Отправляет компонентное сообщение CommandSender (консоль или игрок).
-     * @param sender    получатель
-     * @param component компонент
-     */
-    public void sendComponent(CommandSender sender, Component component) {
-        sender.sendMessage(component);
+    // ========== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ==========
+
+    private Component parseComponent(String key, Object... args) {
+        String message = get(key, args);
+        return MiniMessage.miniMessage().deserialize(message);
     }
 
-    /**
-     * Отправляет компонентное сообщение CommandSender (консоль или игрок).
-     * @param sender    получатель
-     * @param component компонент
-     */
-    public void sendComponent(CommandSender sender, Component component) {
-        sender.sendMessage(component);
-    }
+    // ========== СТАТИЧЕСКИЙ ДОСТУП (для удобства в других плагинах) ==========
+
+    private static LanguageManager instance;
 
     /**
-     * Отправляет ActionBar с обработкой PlaceholderAPI.
-     * @param player игрок
-     * @param key    ключ
-     * @param args   аргументы
+     * Инициализирует глобальный экземпляр (если требуется синглтон).
+     * @param plugin   плагин
+     * @param language язык
      */
-    public void sendActionBarWithPAPI(Player player, String key, Object... args) {
-        String message = parsePlaceholders(player, get(key, args));
-        Component component = MiniMessage.miniMessage().deserialize(message);
-        player.sendActionBar(component);
+    public static void init(JavaPlugin plugin, String language) {
+        if (instance == null) {
+            instance = new LanguageManager(plugin, language);
+        }
     }
 
     /**

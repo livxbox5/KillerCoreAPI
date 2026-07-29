@@ -9,7 +9,7 @@ val author = "KillerYT"
 
 repositories {
     mavenCentral()
-    mavenLocal() // на случай локальной установки Vault
+    mavenLocal()
     maven {
         name = "papermc"
         url = uri("https://repo.papermc.io/repository/maven-public/")
@@ -20,6 +20,9 @@ repositories {
     maven {
         url = uri("https://repo.codemc.io/repository/maven-public/")
     }
+    maven {
+        url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    }
 }
 
 dependencies {
@@ -29,6 +32,9 @@ dependencies {
 
     // Vault API (используем JitPack)
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
+
+    // placeholderAPI
+    compileOnly("me.clip:placeholderapi:2.11.6")
 }
 
 java {
