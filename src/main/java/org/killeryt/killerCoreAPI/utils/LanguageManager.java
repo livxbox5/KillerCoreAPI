@@ -3,12 +3,14 @@ package org.killeryt.killerCoreAPI.utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.time.Duration;
@@ -16,13 +18,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Менеджер языковых сообщений с поддержкой:
- * - Форматирования через String.format
- * - Префиксов
- * - ActionBar, Title, Subtitle (Adventure API)
- * - Компонентных сообщений (MiniMessage)
- * - Получения чистого текста без форматирования
- * - Рассылки
+ * Менеджер языковых сообщений с полным набором методов для отправки сообщений,
+ * ActionBar, Title, Subtitle, компонентов, рассылок и т.д.
+ * Поддерживает форматирование через String.format, префиксы, MiniMessage и PlaceholderAPI.
+ *
+ * @author KillerYT
+ * @version 2.0
  */
 public class LanguageManager {
 
@@ -31,7 +32,7 @@ public class LanguageManager {
     private FileConfiguration config;
     private final Map<String, String> cache = new HashMap<>();
 
-    // MiniMessage для парсинга компонентов (если в сообщениях используется MiniMessage)
+    // MiniMessage для парсинга компонентов
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
 
     /**
@@ -44,6 +45,8 @@ public class LanguageManager {
         this.language = language;
         reload();
     }
+
+    // ========== ЗАГРУЗКА И ПЕРЕЗАГРУЗКА ==========
 
     /**
      * Перезагружает языковой файл из папки lang/ и очищает кэш.
@@ -61,6 +64,25 @@ public class LanguageManager {
         config = YamlConfiguration.loadConfiguration(langFile);
         cache.clear();
     }
+
+    /**
+     * Возвращает текущий язык.
+     * @return код языка
+     */
+    public String getLanguage() {
+        return language;
+    }
+
+    /**
+     * Проверяет, существует ли ключ в языковом файле.
+     * @param key ключ
+     * @return true, если ключ есть
+     */
+    public boolean containsKey(String key) {
+        return config.contains(key);
+    }
+
+    // ========== ПОЛУЧЕНИЕ СООБЩЕНИЙ ==========
 
     /**
      * Получает сообщение по ключу без параметров.
@@ -101,13 +123,25 @@ public class LanguageManager {
     }
 
     /**
-     * Проверяет, существует ли ключ в языковом файле.
-     * @param key ключ
-     * @return true, если ключ есть
+     * Получает префикс из языкового файла (ключ "prefix").
+     * @return префикс с цветами
      */
-    public boolean containsKey(String key) {
-        return config.contains(key);
+    public String getPrefix() {
+        return get("prefix", new Object[0]);
     }
+
+    /**
+     * Получает сообщение как Component (с поддержкой MiniMessage).
+     * @param key  ключ сообщения
+     * @param args аргументы для форматирования
+     * @return Component
+     */
+    public Component toComponent(String key, Object... args) {
+        String message = get(key, args);
+        return MiniMessage.miniMessage().deserialize(message);
+    }
+
+    // ========== ОТПРАВКА СООБЩЕНИЙ (базовые) ==========
 
     /**
      * Отправляет сообщение получателю.
@@ -121,7 +155,7 @@ public class LanguageManager {
     }
 
     /**
-     * Отправляет сообщение игроку (удобная обертка).
+     * Отправляет сообщение игроку.
      * @param player игрок
      * @param key    ключ сообщения
      * @param args   аргументы для форматирования
@@ -167,7 +201,7 @@ public class LanguageManager {
      * @param args   аргументы для форматирования
      */
     public void sendPrefixed(CommandSender sender, String key, Object... args) {
-        String prefix = get("prefix");
+        String prefix = getPrefix();
         String message = prefix + get(key, args);
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
     }
@@ -180,6 +214,15 @@ public class LanguageManager {
      */
     public void sendPrefixed(Player player, String key, Object... args) {
         sendPrefixed((CommandSender) player, key, args);
+    }
+
+    /**
+     * Отправляет сообщение с префиксом и без параметров.
+     * @param sender получатель
+     * @param key    ключ сообщения
+     */
+    public void sendPrefixed(CommandSender sender, String key) {
+        sendPrefixed(sender, key, new Object[0]);
     }
 
     // ========== ACTION BAR ==========
@@ -196,12 +239,31 @@ public class LanguageManager {
         player.sendActionBar(component);
     }
 
+    /**
+     * Отправляет сообщение в ActionBar игроку и автоматически очищает через указанное количество тиков.
+     * @param player   игрок
+     * @param key      ключ сообщения
+     * @param ticks    через сколько тиков очистить (0 = не очищать)
+     * @param args     аргументы для форматирования
+     */
+    public void sendActionBar(Player player, String key, int ticks, Object... args) {
+        sendActionBar(player, key, args);
+        if (ticks > 0) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    player.sendActionBar(Component.empty());
+                }
+            }.runTaskLater(plugin, ticks);
+        }
+    }
+
     // ========== TITLE / SUBTITLE ==========
 
     /**
      * Отправляет Title и Subtitle игроку с длительностью по умолчанию (10, 70, 20 тиков).
      * @param player   игрок
-     * @param titleKey ключ для Title
+     * @param titleKey ключ для Title (может быть null)
      * @param subKey   ключ для Subtitle (может быть null)
      * @param args     аргументы для форматирования
      */
@@ -212,7 +274,7 @@ public class LanguageManager {
     /**
      * Отправляет Title и Subtitle игроку с кастомной длительностью.
      * @param player   игрок
-     * @param titleKey ключ для Title
+     * @param titleKey ключ для Title (может быть null)
      * @param subKey   ключ для Subtitle (может быть null)
      * @param fadeIn   время появления (тики)
      * @param stay     время отображения (тики)
@@ -236,33 +298,30 @@ public class LanguageManager {
 
     /**
      * Отправляет только Subtitle (без Title).
-     * @param player   игрок
-     * @param subKey   ключ для Subtitle
-     * @param args     аргументы для форматирования
+     * @param player игрок
+     * @param subKey ключ для Subtitle
+     * @param args   аргументы для форматирования
      */
     public void sendSubtitle(Player player, String subKey, Object... args) {
         Component subtitle = parseComponent(subKey, args);
-        // Корректный способ: отправляем Title с пустым Title и Subtitle
         player.showTitle(Title.title(Component.empty(), subtitle));
+    }
+
+    /**
+     * Отправляет только Title (без Subtitle).
+     * @param player   игрок
+     * @param titleKey ключ для Title
+     * @param args     аргументы для форматирования
+     */
+    public void sendTitleOnly(Player player, String titleKey, Object... args) {
+        sendTitle(player, titleKey, null, args);
     }
 
     // ========== COMPONENT (ADVENTURE) ==========
 
     /**
-     * Преобразует сообщение с цветовыми кодами (&) в Component.
-     * @param key  ключ сообщения
-     * @param args аргументы для форматирования
-     * @return Component
-     */
-    public Component toComponent(String key, Object... args) {
-        String message = get(key, args);
-        // MiniMessage поддерживает &, но не все; используем legacy converter
-        return MiniMessage.miniMessage().deserialize(message);
-    }
-
-    /**
      * Отправляет Component напрямую игроку.
-     * @param player   игрок
+     * @param player    игрок
      * @param component компонент
      */
     public void sendComponent(Player player, Component component) {
@@ -280,7 +339,7 @@ public class LanguageManager {
         player.sendMessage(component);
     }
 
-    // ========== BULK / BROADCAST ==========
+    // ========== BROADCAST (РАССЫЛКА) ==========
 
     /**
      * Отправляет сообщение всем онлайн-игрокам.
@@ -298,9 +357,115 @@ public class LanguageManager {
      * @param args аргументы для форматирования
      */
     public void broadcastPrefixed(String key, Object... args) {
-        String prefix = get("prefix");
+        String prefix = getPrefix();
         String message = prefix + get(key, args);
         plugin.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
+    }
+
+    // ========== ОТПРАВКА В КОНСОЛЬ ==========
+
+    /**
+     * Отправляет сообщение в консоль сервера.
+     * @param key  ключ сообщения
+     * @param args аргументы для форматирования
+     */
+    public void sendToConsole(String key, Object... args) {
+        String message = get(key, args);
+        plugin.getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+    }
+
+    // ========== ОТПРАВКА С ЗАДЕРЖКОЙ ==========
+
+    /**
+     * Отправляет сообщение игроку с задержкой в тиках.
+     * @param player игрок
+     * @param key    ключ сообщения
+     * @param delay  задержка в тиках
+     * @param args   аргументы для форматирования
+     */
+    public void sendLater(Player player, String key, long delay, Object... args) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                sendMessage(player, key, args);
+            }
+        }.runTaskLater(plugin, delay);
+    }
+
+    /**
+     * Отправляет Title игроку с задержкой в тиках.
+     * @param player   игрок
+     * @param titleKey ключ Title
+     * @param subKey   ключ Subtitle
+     * @param delay    задержка в тиках
+     * @param args     аргументы для форматирования
+     */
+    public void sendTitleLater(Player player, String titleKey, String subKey, long delay, Object... args) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                sendTitle(player, titleKey, subKey, args);
+            }
+        }.runTaskLater(plugin, delay);
+    }
+
+    // ========== ИНТЕГРАЦИЯ С PLACEHOLDERAPI ==========
+
+    /**
+     * Обрабатывает строку через PlaceholderAPI (если он установлен).
+     * @param player игрок, для которого обрабатываются плейсхолдеры
+     * @param text   строка с плейсхолдерами
+     * @return обработанная строка
+     */
+    public String parsePlaceholders(Player player, String text) {
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            try {
+                return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, text);
+            } catch (Exception e) {
+                // Игнорируем
+            }
+        }
+        return text;
+    }
+
+    /**
+     * Отправляет сообщение с обработкой PlaceholderAPI.
+     * @param player игрок
+     * @param key    ключ сообщения
+     * @param args   аргументы для форматирования
+     */
+    public void sendWithPAPI(Player player, String key, Object... args) {
+        String message = get(key, args);
+        message = parsePlaceholders(player, message);
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+    }
+
+    // ========== ДОПОЛНИТЕЛЬНЫЕ МЕТОДЫ ==========
+
+    /**
+     * Отправляет сообщение игроку с префиксом и с обработкой PlaceholderAPI.
+     * @param player игрок
+     * @param key    ключ сообщения
+     * @param args   аргументы для форматирования
+     */
+    public void sendPrefixedWithPAPI(Player player, String key, Object... args) {
+        String prefix = getPrefix();
+        String message = prefix + get(key, args);
+        message = parsePlaceholders(player, message);
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+    }
+
+    /**
+     * Отправляет сообщение в ActionBar с обработкой PlaceholderAPI.
+     * @param player игрок
+     * @param key    ключ сообщения
+     * @param args   аргументы для форматирования
+     */
+    public void sendActionBarWithPAPI(Player player, String key, Object... args) {
+        String message = get(key, args);
+        message = parsePlaceholders(player, message);
+        Component component = MiniMessage.miniMessage().deserialize(message);
+        player.sendActionBar(component);
     }
 
     // ========== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ==========
@@ -308,5 +473,31 @@ public class LanguageManager {
     private Component parseComponent(String key, Object... args) {
         String message = get(key, args);
         return MiniMessage.miniMessage().deserialize(message);
+    }
+
+    // ========== СТАТИЧЕСКИЙ ДОСТУП (для удобства в других плагинах) ==========
+
+    private static LanguageManager instance;
+
+    /**
+     * Инициализирует глобальный экземпляр (если требуется синглтон).
+     * @param plugin   плагин
+     * @param language язык
+     */
+    public static void init(JavaPlugin plugin, String language) {
+        if (instance == null) {
+            instance = new LanguageManager(plugin, language);
+        }
+    }
+
+    /**
+     * Возвращает глобальный экземпляр (если он был инициализирован).
+     * @return LanguageManager
+     */
+    public static LanguageManager getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("LanguageManager не инициализирован! Вызовите LanguageManager.init()");
+        }
+        return instance;
     }
 }
