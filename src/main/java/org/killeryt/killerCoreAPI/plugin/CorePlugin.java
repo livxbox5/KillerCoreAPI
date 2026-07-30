@@ -4,7 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.killeryt.killerCoreAPI.KillerCoreAPI;
 import org.killeryt.killerCoreAPI.utils.ConfigGenerator;
 import org.killeryt.killerCoreAPI.utils.DebugUtils;
-import org.killeryt.killerCoreAPI.utils.LanguageManager;
+import org.killeryt.killerCoreAPI.utils.message.LanguageManager;
 
 public abstract class CorePlugin extends JavaPlugin {
 

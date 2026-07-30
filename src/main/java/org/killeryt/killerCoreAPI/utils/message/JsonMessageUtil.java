@@ -6,7 +6,6 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.entity.Player;
-import org.killeryt.killerCoreAPI.utils.LanguageManager;
 
 import java.util.List;
 
@@ -14,9 +13,7 @@ import java.util.List;
  * Утилиты для работы с интерактивными JSON-сообщениями (Adventure API).
  * Позволяют создавать кликабельные кнопки, подсказки, составные сообщения
  * и готовые меню для управления регионами и командами.
- * Этот класс является единым фасадом для всех JSON-операций.
  */
-@SuppressWarnings("unused") // Методы будут использоваться в плагинах
 public final class JsonMessageUtil {
 
     private JsonMessageUtil() {}
