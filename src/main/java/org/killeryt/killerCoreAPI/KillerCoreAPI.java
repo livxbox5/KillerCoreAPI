@@ -1,11 +1,10 @@
 package org.killeryt.killerCoreAPI;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import org.killeryt.killerCoreAPI.gui.action.*;
-import org.killeryt.killerCoreAPI.gui.dynamic.*;
+import org.killeryt.killerCoreAPI.gui.action.ActionRegistry;
+import org.killeryt.killerCoreAPI.gui.dynamic.ConfigurableGuiManager;
 import org.killeryt.killerCoreAPI.gui.listener.GuiListener;
-import org.killeryt.killerCoreAPI.gui.menu.*;
-import org.killeryt.killerCoreAPI.gui.*;
+import org.killeryt.killerCoreAPI.gui.menu.GuiManager;
 import org.killeryt.killerCoreAPI.utils.DebugUtils;
 
 import lombok.Getter;
@@ -21,6 +20,11 @@ public final class KillerCoreAPI extends JavaPlugin {
     public void onEnable() {
         instance = this;
         getLogger().info("KillerCoreAPI загружен!");
+
+        // Инициализация DebugUtils – используем синглтон
+        debugUtils = DebugUtils.getInstance();
+        debugUtils.initialize(getLogger(), getConfig());
+
         GuiManager.init(this);
     }
 
@@ -40,7 +44,13 @@ public final class KillerCoreAPI extends JavaPlugin {
      * Инициализация GUI-системы. Вызывается из CorePlugin.onEnable().
      */
     public static void initGui(JavaPlugin plugin) {
-        debugUtils = new DebugUtils(plugin);
+        // DebugUtils уже инициализирован в onEnable, но если вызывают до onEnable,
+        // можно повторно инициализировать (но лучше вызывать после onEnable)
+        if (debugUtils == null) {
+            debugUtils = DebugUtils.getInstance();
+            debugUtils.initialize(plugin.getLogger(), plugin.getConfig());
+        }
+
         plugin.getServer().getPluginManager().registerEvents(new GuiListener(debugUtils), plugin);
         ActionRegistry.registerDefaults(plugin);
         configurableGuiManager = new ConfigurableGuiManager(plugin, "modules/guis", debugUtils);

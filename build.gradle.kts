@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "org.killeryt"
-version = "1.0.0"
+version = "0.0.1-alpha-1"
 val author = "KillerYT"
 
 repositories {
@@ -35,6 +35,10 @@ dependencies {
 
     // placeholderAPI
     compileOnly("me.clip:placeholderapi:2.11.6")
+
+    // база данных
+    compileOnly("org.postgresql:postgresql:42.7.3")
+    compileOnly("com.h2database:h2:2.2.224")
 }
 
 java {

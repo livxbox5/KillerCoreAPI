@@ -1,5 +1,5 @@
 name: KillerCoreAPI
-version: '1.0.0'
+version: '0.0.1-alpha-1'
 main: org.killeryt.killerCoreAPI.KillerCoreAPI
 api-version: '26.1'
 authors: [ 'KillerYT' ]

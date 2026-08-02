@@ -3,7 +3,7 @@
   "component": {
     "group": "org.killeryt",
     "module": "KillerCoreAPI",
-    "version": "1.0.0",
+    "version": "0.0.1-alpha-1",
     "attributes": {
       "org.gradle.status": "release"
     }
@@ -25,13 +25,13 @@
       },
       "files": [
         {
-          "name": "KillerCoreAPI-1.0.0.jar",
-          "url": "KillerCoreAPI-1.0.0.jar",
-          "size": 48469,
-          "sha512": "03af9411fbb7a18a73d6611ef487ead3aeb31d8bd5968129dbf414da87a3c1a383d1932924bd10d55cd889d57b85e13d739f5e442be0bc1c2e3dc77f540977b1",
-          "sha256": "8342317279e4c62d9c8f1ccfa746192dcba4e80928e8720e38f1daa9399ba3fb",
-          "sha1": "9bb9db133fe7740e3bb302f78e1527133dc99523",
-          "md5": "2110b2fdc12e160d813c4002afc8d16d"
+          "name": "KillerCoreAPI-0.0.1-alpha-1.jar",
+          "url": "KillerCoreAPI-0.0.1-alpha-1.jar",
+          "size": 81896,
+          "sha512": "3b2cfa90d6cefedf4ac8520c40acc9fe4728de9290004e2ba4ec9733fe4a6526a5285e1d901f6cc0bdcaed8f68dcbe87b1cac14de732e49f368ca83d51fb4141",
+          "sha256": "8a46494d0aab6e44db4ee87d0d415048b29dbb878ecf5f995aa95072ff09de4b",
+          "sha1": "b1cf107910f48354b5f883a134e9672d57286e62",
+          "md5": "3f96518df2fcf1676ebbf54b13171af4"
         }
       ]
     },
@@ -46,13 +46,13 @@
       },
       "files": [
         {
-          "name": "KillerCoreAPI-1.0.0.jar",
-          "url": "KillerCoreAPI-1.0.0.jar",
-          "size": 48469,
-          "sha512": "03af9411fbb7a18a73d6611ef487ead3aeb31d8bd5968129dbf414da87a3c1a383d1932924bd10d55cd889d57b85e13d739f5e442be0bc1c2e3dc77f540977b1",
-          "sha256": "8342317279e4c62d9c8f1ccfa746192dcba4e80928e8720e38f1daa9399ba3fb",
-          "sha1": "9bb9db133fe7740e3bb302f78e1527133dc99523",
-          "md5": "2110b2fdc12e160d813c4002afc8d16d"
+          "name": "KillerCoreAPI-0.0.1-alpha-1.jar",
+          "url": "KillerCoreAPI-0.0.1-alpha-1.jar",
+          "size": 81896,
+          "sha512": "3b2cfa90d6cefedf4ac8520c40acc9fe4728de9290004e2ba4ec9733fe4a6526a5285e1d901f6cc0bdcaed8f68dcbe87b1cac14de732e49f368ca83d51fb4141",
+          "sha256": "8a46494d0aab6e44db4ee87d0d415048b29dbb878ecf5f995aa95072ff09de4b",
+          "sha1": "b1cf107910f48354b5f883a134e9672d57286e62",
+          "md5": "3f96518df2fcf1676ebbf54b13171af4"
         }
       ]
     }
