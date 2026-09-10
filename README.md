@@ -1,2 +1,2 @@
 Библотика для плагинов KillerYTuber
-RegionMCBlock ,UCM , LuckyBlock
+RegionMCBlock ,UCM , LuckyBlock , RegionMC
